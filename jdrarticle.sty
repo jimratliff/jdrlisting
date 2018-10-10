@@ -1,0 +1,406 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	This is Jim Ratliff's basic preamble for LaTeX documents, which will load as a package.
+%	Assumes that \documentclass[12pt]{article} is issued before this package is loaded.
+%
+%	Version: 2018_07_01_1449
+%		Added package makecell
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ProvidesPackage{jdrarticle}
+\RequirePackage{jdrstyle}
+
+%%%%%%%%%%%%%% INDEX (with keys to search for)
+%	\PassOptionsToPackage
+%	Load packages
+%	Document formatting						(search: docformat )
+%	Paragraph-related settings				(search: paraformat )
+%	Title, header, and footer settings		(search: headfootformat )
+%	Lists-related settings					(search: listsformat  )
+%		Define jdr_itemize environment for bulleted lists
+%		Defines jdr_enumerate environment for numbered lists
+%	Sectioning-related settings				(search: secformat )
+%	Table of Contents settings				(search: tocformat )
+%	Footnote-related settings				(search: footnoteformat )
+%	Table and Figure caption settings		(search: captionsettings )
+%	showkeys-related definition				(search: showkeysdefinition )
+%	Custom definitions						(search: custdefs )
+%		Custom color definitions			(search:custcolors)
+%		Font definitions					(search:fontDefinitions)
+%		Custom column type (K)				(search: customColumns)
+%		Other custom commands				(search: customCommands)
+%			\jdrsum{}{}
+%		Redefine \footnote
+%		Define \jdrrunningtitle 			(search: definejdrrunningtitle)
+%		Define \jdrcode
+%		Math-related definitions			(search: mathdefs )
+%			Redefine \emptyset
+%			Define \lowerbar
+%			Define \overbar
+%			Define blackboard-bold characters
+%			Define characters to enclose equation numbers
+%	Loads hyperref package (should be last to load)		(search: loadhyperref)
+
+%	\PassOptionsToPackage: To prevent option clashes when other packages load this package earlier without options.
+\PassOptionsToPackage{dvipsnames,table}{xcolor} 
+
+%%%%%%%%% Load packages %%%%%%%%%%%%%%%
+
+%	Packages required to implement the showkeys package to display labels in drafts
+\RequirePackage{seqsplit}
+\RequirePackage{xstring}
+
+%	Font-related packages
+\RequirePackage{fontspec}
+\RequirePackage{mathpazo} % Uses mathpazo (Palatino) as the main font.
+\setmainfont
+     [ BoldFont       = texgyrepagella-bold.otf ,
+       ItalicFont     = texgyrepagella-italic.otf ,
+       BoldItalicFont = texgyrepagella-bolditalic.otf ]
+     {texgyrepagella-regular.otf}
+\RequirePackage{textcomp}
+\RequirePackage[scaled=0.92]{helvet} % Means to load Helvetica and its clones, scaled so it matches Times Roman
+\RequirePackage{relsize}		% Package allows specifying that something should be set larger or smaller relative to the size of surrounding text
+
+\RequirePackage{jdrunicode} % This is NOT a standard LaTeX package
+						% The jdrunicode.sty must be included in the files belonging to the Overleaf project.
+
+\RequirePackage{setspace}		% Used for tightening up vertical spacing in Table of Contents
+\RequirePackage{titling}		% Preserves \thetitle, \author, and \date macros for later use after the title page is generated
+\RequirePackage[small,compact]{titlesec}	% "small" is size of titles; "compact" reduces spacing above and below titles
+\RequirePackage{fancyhdr}		% Package used to customize head and footlines
+%\RequirePackage{tocloft}		% Package for formatting Tables of contents, figures, tables, etc.
+\RequirePackage{ragged2e}		% Allows, e.g, \RaggedRight (which allows for hyphenation)
+
+\RequirePackage{mathtools}		% Note: this loads amsmath
+\RequirePackage{amsmath}		% Include the AMS Math packages
+\RequirePackage{amssymb}
+\RequirePackage{amsthm}
+
+\RequirePackage{array}
+
+\RequirePackage{xspace}
+
+\RequirePackage{etoolbox}
+%	To make the TOC "Contents" centered
+%		See Gonzalo Medina's answer, https://tex.stackexchange.com/a/269712/7922, to
+%		"titlesec ToC formatting — capitalization, subsection numbering for sections, title formatting", TeX Stack Exchange, September 26, 2015
+%		https://tex.stackexchange.com/questions/269711/titlesec-toc-formatting-capitalization-subsection-numbering-for-sections-ti
+\patchcmd{\tableofcontents}
+  {\contentsname}
+  {\hfill\Large{\contentsname}\hfill\null}
+  {}
+  {}
+
+% Packages used in tables
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}		
+\RequirePackage{booktabs}
+\RequirePackage{xcolor}
+\RequirePackage{makecell}
+\RequirePackage{multirow}
+\RequirePackage{ctable}
+
+%\RequirePackage{footnote}% (a) for footnotes in tables; (b) MUST be loaded after xcolor
+
+\RequirePackage{soul}			% Used in defining \jdrcode
+							% Note: \jdrcode sets soul's highlighting color to light gray, probabl								% conflicting with any other highlighting use.
+
+\RequirePackage{graphicx}		% Package for processing graphics
+
+\RequirePackage{lastpage}		% Loads lastpage package to enable page numbers of the form "Page x of y"
+                            % Note: For more-ambitious page-numbering scenarios, consider the more-robust pageslts package
+
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}		% Uses geometry package to set margins
+
+\RequirePackage{natbib}			%	Uses the natbib package for bibliographies
+
+%%%%%%%%%%% DOCUMENT FORMATTING (search: docformat ) %%%%%%%%%%%%%%%%
+%	Sets disincentive for widows and orphans (club lines)
+\widowpenalty=1000
+\clubpenalty=1000
+% Prevents LaTeX from distributing a lot of vertical white space to force the text to distribute among the entire height
+\raggedbottom
+
+%%%%%%%%%%%% PARAGRAPH-RELATED SETTINGS (search: paraformat ) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sets the inter-paragraph vertical spacing. 1 ex is the height of the letter "x".
+\setlength{\parskip}{1ex}  
+% Indents the first line of each paragraph by the width of the letter "M".
+\setlength{\parindent}{1em}  
+% Magnifies the normal distance between baselines (the line on which the letters sit. Default = 1.
+\renewcommand{\baselinestretch}{1.33}   
+% Suppresses extra spaces after sentence-ending periods.
+\frenchspacing 
+
+%%%%%%%%%%%%% TITLE, HEADER, AND FOOTER SETTINGS (search: headfootformat ) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Raise the document title to reduce the white space above the title
+\setlength{\droptitle}{-1.0in}
+
+%   Define \jdrarticleSetHeaderFooter to set elements of header and footer
+%   Call this in main.tex before \maketitle
+\newcommand{\jdrarticleSetElementsTitleHeaderFooter}{%
+    \renewcommand{\jdrrunningtitle}{\jdrRunningHead}
+    \title{\jdrTitle\thanks{\jdrVersionDateEtc}}
+    \author{\jdrAuthor\thanks{\jdrAuthorAffiliation}}
+    \date{}		% When empty, suppresses the date in the title; otherwise, it will supply today's date
+    %\date{June 17, 2011}
+    \chead{\jdrheadfootfont \jdrrunningtitle}
+    \lfoot{\jdrheadfootfont \theauthor}
+    \cfoot{\jdrheadfootfont \jdrConfidentialityFooter}	
+    %\rfoot{\jdrheadfootfont \thepage} 		% \thepage is the number of the current page
+    \rfoot{\jdrheadfootfont Page \thepage\ of \pageref{LastPage}} 	% E.g., "Page 3 of 32" 
+}
+
+% Uses the fancyhdr package to customize the head and footlines, using the "fancy" page style
+% Defines font style/size for headers and footers
+\newcommand{\jdrheadfootfont}{\sf \small}
+\pagestyle{fancy} % Triggers use of the fancyhdr package. See https://goo.gl/ONlLj
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}   % Turns on the foot rule
+\setlength{\headheight}{14pt} % Overleaf complains when not changed from its default (which appears to be 12pt). See ((Overleaf complains that Fancyhdr headheight is too small)), https://goo.gl/xE2mya
+
+%	Set the head and footline components
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+
+%	Redefine the plain style using fancyhdr, to maintain the "page x of y" footer on the first page
+%		Usage note: I typically use the plain style for the very first page only.
+%	Because hyperref makes hyperlinks of the "of y" page number, I've stopped using "page x of y" except on the first page.
+\fancypagestyle{plain}{%
+\fancyhf{} % Clears all header and footer fields
+\fancyfoot[C] {\jdrheadfootfont Page \thepage\ of \pageref{LastPage}} %Sets center footer field to "page x of y" 
+\renewcommand{\headrulewidth}{0pt}
+}
+
+%%%%%%%%%%%% LIST-RELATED SETTINGS (search: listsformat ) %%%%%%%%%%%%%%%%%%%%%%%%
+% Setting the bullet characters for itemize lists
+\renewcommand{\labelitemi}{$\bullet$}
+\renewcommand{\labelitemii}{$\diamond$}
+\renewcommand{\labelitemiii}{$\circ$}
+\renewcommand{\labelitemiv}{$\ast$}
+
+%	Define custom list environments to better control the vertical spacing
+%	The four parameters
+%	\jdrlistparskip			Space between paragraphs outside of a list, and part of the space between a
+%							non-list paragraph and a list item
+%	\jdrlistparsep			Paragraph separation within a multiparagraph list item
+%							(Allegedly; this isn't doing anything for me.)
+%	\jdrlistitemsep			Extra inter-item spacing added to \parsep
+%							can be redefined, e.g., \renewcommand{\jdrlistitemsep}{2pt}
+%	\jdrlistvspacebefore	When negative, erases excessive vertical space between the paragraph preceding the list and the list itself
+
+\newcommand{\jdrlistitemsep}{0pt}
+\newcommand{\jdrlistparskip}{0pt}
+\newcommand{\jdrlistparsep}{0pt}
+\newcommand{\jdrlistvspacebefore}{-7pt}
+
+\newenvironment{jdr_itemize} {
+\vspace{\jdrlistvspacebefore} % When negative, erases excessive vertical space between the paragraph preceding the list and the list itself
+\begin{itemize}
+	\setlength{\itemsep}{\jdrlistitemsep}
+	\setlength{\parskip}{\jdrlistparskip}
+	\setlength{\parsep}{\jdrlistparsep}
+}
+{	\end{itemize}	}
+
+\newenvironment{jdr_enumerate} {
+\vspace{\jdrlistvspacebefore} % When negative, erases excessive vertical space between the paragraph preceding the list and the list itself
+\begin{enumerate}
+	\setlength{\itemsep}{\jdrlistitemsep}
+	\setlength{\parskip}{\jdrlistparskip}
+	\setlength{\parsep}{\jdrlistparsep}
+}
+{	\end{enumerate}	}
+
+%%%%%%%%%%% SECTION-RELATED SETTINGS (search: secformat ) %%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Problem to be address: The inability to, by default, have deeper subsections than subsubsection
+%	See http://goo.gl/hbWdbp , http://goo.gl/aYqExB
+
+\RequirePackage{titlesec}
+\titleformat{\section}
+  {\normalfont\Large\bfseries}{\thesection}{1em}{\setstretch{1.0}}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{\thesubsection}{1em}{\setstretch{1.0}}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}
+  {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titleformat{\subparagraph}
+  {\normalfont\normalsize\bfseries}{\thesubparagraph}{1em}{}
+
+\titlespacing*{\section}      {0pt}{3.5ex plus 1ex minus .2ex} {2.3ex plus .2ex}
+\titlespacing*{\subsection}   {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\paragraph}    {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\subparagraph} {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\RequirePackage{titletoc}
+%	For the following settings, see http://goo.gl/d0ottG, http://goo.gl/xxLRFz
+
+\dottedcontents{section}%
+  [0em]% left indent
+  {\addvspace{0pt}}% stuff before
+  {2.0em}% spacing of \contentslabel
+  {0.75em}% space between the dots
+  [\addvspace{0pt}]% stuff after
+
+\dottedcontents{subsection}%
+  [2.75em]% left indent
+  {\addvspace{0pt}}% stuff before
+  {2.75em}% spacing of \contentslabel
+  {0.75em}% space between the dots
+  [\addvspace{0pt}]% stuff after
+
+\dottedcontents{subsubsection}%
+  [6.25em]% left indent
+  {\addvspace{0pt}}% stuff before
+  {3.5em}% spacing of \contentslabel
+  {0.75em}% space between the dots
+  [\addvspace{0pt}]% stuff after
+
+\dottedcontents{paragraph}%
+  [10.75em]% left indent
+  {\addvspace{0pt}}% stuff before
+  {4.25em}% spacing of \contentslabel
+  {0.75em}% space between the dots
+  [\addvspace{0pt}]% stuff after
+
+\dottedcontents{subparagraph}%
+  [13.0em]% left indent
+  {\addvspace{0pt}}% stuff before
+  {5.0em}% spacing of \contentslabel
+  {0.75em}% space between the dots
+  [\addvspace{0pt}]% stuff after
+
+%	Change section headings to II.B.3 format
+%\renewcommand\cftsecaftersnum{.}
+\def\thesection{\Roman{section}} 
+\def\thesubsection{\thesection.\Alph{subsection}}
+\def\thesubsubsection{\thesubsection.\arabic{subsubsection}}
+
+% Sets the depth of section numbering
+\setcounter{secnumdepth}{5}
+% Sets the depth to which the section hierarchy is represented in the table of contents.
+\setcounter{tocdepth}{5}
+%	Uses titlesec package to tighten up vertical space between section headings and the following text
+\titlespacing*{\section} {0pt}{*0}{*-1}
+\titlespacing*{\subsection}  {0pt}{*0}{*-1}
+\titlespacing*{\subsubsection} {0pt}{*0}{*-1}
+
+%%%%%%%%%%% TABLE OF CONTENTS-RELATED SETTINGS (search: tocformat ) %%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Changes title of Table of Contents to be Large, bold, and centered
+%	Relies on the tocloft package. See https://goo.gl/yGjf2v at page 7
+%\renewcommand{\cfttoctitlefont}{\hspace*{\fill}\Large\bfseries} 
+%\renewcommand{\cftaftertoctitle}{\hspace*{\fill}} 
+
+%	Sets \@tocrmarg (the TOC right margin; defaults to 2.55em) to be large enough that the content (name of the section)
+%		doesn't overrun the page number on the right margin.
+%		Note that \@tocrmarg must be greater than \@pnumwidth, which defaults to 1.55em
+%		Note: since the default values imply that \@tocrmarg > \@pnumwidth, it's a mystery why empirically
+%			I've encountered the content spilling so far to the right that it knocked the page number (which 
+%			should be right justified) into the middle of the page, and without leading dots.
+\makeatletter % changes the catcode of @ to 11. See https://goo.gl/m2t83t
+\renewcommand{\@tocrmarg}{3em}
+\makeatother % changes the catcode of @ back to 12. See https://goo.gl/m2t83t
+
+%%%%%%%%%%% FOOTNOTE-RELATED SETTINGS (search: footnoteformat ) %%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Discourage splitting footnotes across different pages
+\interfootnotelinepenalty=10000
+%	Adds additional vertical space beneath the footnote rule (above the first footnote)
+\renewcommand\footnoterule{\vspace*{-9pt}%
+	\hrule height 0.4pt width 0.4\columnwidth
+	\vspace*{8.6pt}}
+%	Defines the vertical spacing between the bottom of the main text and the top of the first footnote
+\addtolength{\skip\footins}{1em}
+%	Adds spacing between footnotes
+\setlength{\footnotesep}{1em}
+% Use the footmisc portmanteau package of footnote-customizing commands to make footnotes hang with the footmark just inside the left margin.
+\usepackage[hang,multiple,bottom]{footmisc}
+\newlength{\jdrstyleFootnoteMargin}
+\setlength{\jdrstyleFootnoteMargin}{1.8em}
+\renewcommand{\footnotemargin}{\jdrstyleFootnoteMargin}
+
+%	Styles the \thanks to align with the footnotes
+%		See Alan Munn's answer to "Thanks?," comp.text.tex, May 22, 2009.
+%		https://groups.google.com/d/embed/msg/comp.text.tex/pGeZMVEGIF4/T-99cNaDiKYJ
+\renewcommand{\thanksscript}[1]{#1}
+\renewcommand{\thanksmargin}{-\thanksmarkwidth}
+\renewcommand{\thanksmarkwidth}{\jdrstyleFootnoteMargin}
+\thanksfootextra{}{\hfill}
+
+%%%%%%%%%%% CAPTION AND FIGURE CAPTION SETTINGS (search: captionsettings ) %%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Defines format for table and figure captions
+%	margin=2em, established 2em margin on both left and right side
+%	labelfont={bf,sc} makes caption label (e.g., "Table 1") both bold (bf) and small-caps (sc)
+%	format=hang, indention=-0em causes the second and later lines of the caption to hang to the
+%		right of the label, but 0em (can be changed) futher to the left than the end of the label
+%		This will be ignored if the caption text is only a single line, in which case the caption
+%			will be center justified.
+%	tableposition=top and figureposition=bottom do not by themselves position the captions
+%		above/below tables/figures, respectively
+\usepackage[margin=2em, labelfont={bf,sc}, format=hang, indention=-0em, tableposition=top, figureposition=bottom]{caption}
+%	The below gives more space after the colon in "Table 1:  This is the caption text."
+\DeclareCaptionLabelSeparator{colonquad}{:\quad}
+\captionsetup{labelsep=colonquad}
+
+%%%%%%%%%%% SHOWKEYS INITIALIZING DEFINITION (search: showkeysdefinition )
+%	Usage: In main.tex:
+%		For final version, add "final" to \documentclass options
+\usepackage[notref,notcite,color]{showkeys}
+\newcommand{\jdrShowKeysInitialize}[1]{%
+\noexpandarg%
+	\StrSubstitute{\(\{\)#1\(\}\)}{ }{~}[\TEMP]%
+	\parbox[t]{\marginparwidth}%
+    {\raggedright\normalfont\footnotesize\ttfamily\expandafter\seqsplit\expandafter{\TEMP}}
+}
+\renewcommand*\showkeyslabelformat[1]{\jdrShowKeysInitialize{#1}}
+
+%%%%%%%%%%% CUSTOM DEFINITIONS (search: custdefs ) %%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Custom color definitions				(search:custcolors)
+%	Defining a color ("tableShade") for shading alternate rows of a table
+%\definecolor{tableShade}{gray}{0.9}
+%	Define a color for package showkeys to optionally print labels in margins during document development 
+\definecolor{labelkey}{rgb}{1, 0.6, 0.6}
+%	Define a color ("hyperrefcommandcolor") for the links produced by package hyperref
+\definecolor{hyperrefcommandcolor}{rgb}{0.1,0.1,0.6}
+
+
+%	Font definitions					(search:fontDefinitions)
+%	Defines some standard fonts/colors for particular elements
+%	\jdrheadingfont describes the font/color for (currently, Definition)
+%	\bfseries\itshape = bold, italic
+%	\textsf = sans serif
+%	WARNING: I don't think this is used anywhere. Do I have Definition anywhere?
+\newcommand{\jdrheadingfont}[1]{\textsf{\bfseries\itshape\color{RoyalBlue}#1}}
+
+%	Define custom column types					(search: customColumns)
+%	K is my custom-specified column type for tables. See
+%		https://tex.stackexchange.com/questions/238018/tables-with-centered-columns-of-specific-width
+%		A "K" column is both centered horizontally and of the specified width
+%		To change to paragraph (full justification), change "K" to "m", which retains middle vertical alignment.
+\newcolumntype{K}[1]{>{\centering\arraybackslash}m{#1}}
+%	R is custom column type for raggedleft column
+\newcolumntype{R}[1]{>{\RaggedLeft\arraybackslash}m{#1}}
+%	R is custom column type for raggedright column
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}m{#1}}
+
+
+
+
+
+
+%	Define \jdrrunningtitle the running head that appears in the header of each page
+%	(search: definejdrrunningtitle)
+%	User should uncomment one of the two commands below.
+\newcommand{\jdrrunningtitle}{ }
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%	End of preamble
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

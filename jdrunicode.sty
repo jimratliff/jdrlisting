@@ -1,0 +1,157 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%	The jdrunicode package for LaTeX and Overleaf
+%
+%	Author:	Jim Ratliff
+%			jim@jim-ratliff.name
+%			May 4, 2018
+%
+%	Defines three commands:
+%
+%	\jdrunicode (deprecated entry point; replaced by \jdrsymbol)
+%	\jdrcircled
+%
+%	Requires the fontspec package.
+%	Therefore the document must be compiled either under XeLaTeX or LuaLaTeX.
+
+%	NOTE:	\jdrcircled should be rewritten when I feel confident it's safe
+%			to use LaTeX3. See below.
+
+\usepackage{fontspec}
+\usepackage{etoolbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	\jdrunicode
+%
+%	Takes a single argument
+%		\jdrunicode{char}, where char is a unicode character
+%		char may be the character itself, e.g., "⌘", or it may be the unicode code point
+%		for the character using the \symbol command, e.g.,
+%
+%           \jdrunicode{⌘} \\					% Literal
+%           \jdrunicode{\symbol{"2318}} \\		% Hexadecimal
+%           \jdrunicode{\symbol{'21430}} \\		% Octal
+%           \jdrunicode{\symbol{8984}} \\		% Decimal
+%
+%	Returns char rendered in the font Symbola, a font that has glyphs for many
+%		desired unicode characters.
+%	Usage:
+%		In many fonts, there are many characters (e.g., ⌘) do not exist in that font.
+%		Use: \jdrunicode{⌘} to render that font in your document.
+%
+%	Note: \jdrunicode was intended primarily for the use case in which the desired character
+%		ⓐ is not available in the current font but
+%		ⓑ can be more easily be typed directly by the user than by using its numeric code.
+%		Otherwise, the \jdrunicode would have been written to internalize a call to the
+%		\symbol command
+
+\newcommand{\jdrunicode}[1]{{\fontspec{Symbola}#1}}
+\newcommand{\jdrsymbol}[1]{{\fontspec{Symbola}#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END of \jdrunicode %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	\jdrcircled
+%
+%	Takes a single argument.
+%	Returns the "CIRCLED" unicode character corresponding to the argument,
+%		when the argument is one of "1"–"10", "a"–"z", and "A"–"Z".
+%	If the argument is some other character, returns that character wrapped
+%		between "(…)".
+%	For information about the characters returned, see Wikipedia, "Enclosed Alphanumerics,"
+%		https://en.wikipedia.org/wiki/Enclosed_Alphanumerics
+%	Usage example:
+%		\jdrcircled{c}
+%			Results in: "Ⓒ"
+%		\jdrcircled{*}
+%			Results in \textcircled{*} (because "*" is not among the alphanumeric characters for which
+%				these circled characters are defined.
+%
+%	9/7/2018:	Improved with moewe's answer, https://tex.stackexchange.com/a/449796/7922, to my question
+%				"Macro that calls ifthen's \equal doesn't work in section heading. Why?," TeX Stack Exchange,
+%				September 6, 2018.
+%				https://tex.stackexchange.com/questions/449723/macro-that-calls-ifthens-equal-doesnt-work-in-section-heading-why/449814?noredirect=1#449814
+%				This improvement avoided a fatal conflict with hyperref if it is called in a section heading (without specifying
+%				alternative TOC text in the optional argument of the sectioning command).
+%	When I'm reading to move to LaTeX3, I should further rewrite according to egreg's answer, https://tex.stackexchange.com/a/449814/7922,
+%		which promises to remove even the warning from hyperref about "Token not allowed."
+%	
+%\newcommand{\jdrcircled}[1]{%
+\newcommand\jdrcircled[1]{%
+\ifstrequal{#1}{1}{\jdrunicode{\symbol{"2460}}}{%
+\ifstrequal{#1}{2}{\jdrunicode{\symbol{"2461}}}{%
+\ifstrequal{#1}{3}{\jdrunicode{\symbol{"2461}}}{%
+\ifstrequal{#1}{4}{\jdrunicode{\symbol{"2463}}}{%
+\ifstrequal{#1}{5}{\jdrunicode{\symbol{"2464}}}{%
+\ifstrequal{#1}{6}{\jdrunicode{\symbol{"2465}}}{%
+\ifstrequal{#1}{7}{\jdrunicode{\symbol{"2466}}}{%
+\ifstrequal{#1}{8}{\jdrunicode{\symbol{"2467}}}{%
+\ifstrequal{#1}{9}{\jdrunicode{\symbol{"2468}}}{%
+\ifstrequal{#1}{10}{\jdrunicode{\symbol{"2469}}}{%
+\ifstrequal{#1}{a}{\jdrunicode{\symbol{"24D0}}}{%
+\ifstrequal{#1}{b}{\jdrunicode{\symbol{"24D1}}}{%
+\ifstrequal{#1}{c}{\jdrunicode{\symbol{"24D2}}}{%
+\ifstrequal{#1}{d}{\jdrunicode{\symbol{"24D3}}}{%
+\ifstrequal{#1}{e}{\jdrunicode{\symbol{"24D4}}}{%
+\ifstrequal{#1}{f}{\jdrunicode{\symbol{"24D5}}}{%
+\ifstrequal{#1}{g}{\jdrunicode{\symbol{"24D6}}}{%
+\ifstrequal{#1}{h}{\jdrunicode{\symbol{"24D7}}}{%
+\ifstrequal{#1}{i}{\jdrunicode{\symbol{"24D8}}}{%
+\ifstrequal{#1}{j}{\jdrunicode{\symbol{"24D9}}}{%
+\ifstrequal{#1}{k}{\jdrunicode{\symbol{"24DA}}}{%
+\ifstrequal{#1}{l}{\jdrunicode{\symbol{"24DB}}}{%
+\ifstrequal{#1}{m}{\jdrunicode{\symbol{"24DC}}}{%
+\ifstrequal{#1}{n}{\jdrunicode{\symbol{"24DD}}}{%
+\ifstrequal{#1}{o}{\jdrunicode{\symbol{"24DE}}}{%
+\ifstrequal{#1}{p}{\jdrunicode{\symbol{"24DF}}}{%
+\ifstrequal{#1}{q}{\jdrunicode{\symbol{"24E0}}}{%
+\ifstrequal{#1}{r}{\jdrunicode{\symbol{"24E1}}}{%
+\ifstrequal{#1}{s}{\jdrunicode{\symbol{"24E2}}}{%
+\ifstrequal{#1}{t}{\jdrunicode{\symbol{"24E3}}}{%
+\ifstrequal{#1}{u}{\jdrunicode{\symbol{"24E4}}}{%
+\ifstrequal{#1}{v}{\jdrunicode{\symbol{"24E5}}}{%
+\ifstrequal{#1}{w}{\jdrunicode{\symbol{"24E6}}}{%
+\ifstrequal{#1}{x}{\jdrunicode{\symbol{"24E7}}}{%
+\ifstrequal{#1}{y}{\jdrunicode{\symbol{"24E8}}}{%
+\ifstrequal{#1}{z}{\jdrunicode{\symbol{"24E9}}}{%
+\ifstrequal{#1}{A}{\jdrunicode{\symbol{"24B6}}}{%
+\ifstrequal{#1}{B}{\jdrunicode{\symbol{"24B7}}}{%
+\ifstrequal{#1}{C}{\jdrunicode{\symbol{"24B8}}}{%
+\ifstrequal{#1}{D}{\jdrunicode{\symbol{"24B9}}}{%
+\ifstrequal{#1}{E}{\jdrunicode{\symbol{"24BA}}}{%
+\ifstrequal{#1}{F}{\jdrunicode{\symbol{"24BB}}}{%
+\ifstrequal{#1}{G}{\jdrunicode{\symbol{"24BC}}}{%
+\ifstrequal{#1}{H}{\jdrunicode{\symbol{"24BD}}}{%
+\ifstrequal{#1}{I}{\jdrunicode{\symbol{"24BE}}}{%
+\ifstrequal{#1}{J}{\jdrunicode{\symbol{"24BF}}}{%
+\ifstrequal{#1}{K}{\jdrunicode{\symbol{"24C0}}}{%
+\ifstrequal{#1}{L}{\jdrunicode{\symbol{"24C1}}}{%
+\ifstrequal{#1}{M}{\jdrunicode{\symbol{"24C2}}}{%
+\ifstrequal{#1}{N}{\jdrunicode{\symbol{"24C3}}}{%
+\ifstrequal{#1}{O}{\jdrunicode{\symbol{"24C4}}}{%
+\ifstrequal{#1}{P}{\jdrunicode{\symbol{"24C5}}}{%
+\ifstrequal{#1}{Q}{\jdrunicode{\symbol{"24C6}}}{%
+\ifstrequal{#1}{R}{\jdrunicode{\symbol{"24C7}}}{%
+\ifstrequal{#1}{S}{\jdrunicode{\symbol{"24C8}}}{%
+\ifstrequal{#1}{T}{\jdrunicode{\symbol{"24C9}}}{%
+\ifstrequal{#1}{U}{\jdrunicode{\symbol{"24CA}}}{%
+\ifstrequal{#1}{V}{\jdrunicode{\symbol{"24CB}}}{%
+\ifstrequal{#1}{W}{\jdrunicode{\symbol{"24CC}}}{%
+\ifstrequal{#1}{X}{\jdrunicode{\symbol{"24CD}}}{%
+\ifstrequal{#1}{Y}{\jdrunicode{\symbol{"24CE}}}{%
+\ifstrequal{#1}{Z}{\jdrunicode{\symbol{"24CF}}}{%
+%
+%	If the argument of \jdrcircled is not recognized (i.e., not
+%	one for which there is a definition, \jdrcircle returns
+%	the argument itself wrapped in (…).
+%
+%(#1)%		Fall through if character not recognized for symbol
+\textcircled{#1}%
+%	Each of the below string of "}"s terminates the "else" of one
+%	the \ifthenelse statements above. Whenever an \ifthenelse
+%	statement is added or subtracted above, a "}" must be added
+%	or subtracted, respectively, below.
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END of \jdrcircled %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

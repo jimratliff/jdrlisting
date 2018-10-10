@@ -1,0 +1,339 @@
+\ProvidesPackage{jdrlisting}[2018/08/30 v0.1 The jdrlisting package]
+%
+%	Author: Jim Ratliff, jim@jim-ratliff.name
+\RequirePackage[final]{listings}% Final guarantees listing will print even if "draft" mode in documentclass
+\RequirePackage{jdrunicode}
+\RequirePackage{xcolor}
+\RequirePackage{float}
+%\RequirePackage{cleveref} % Must be loaded after hyperref
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEFINE NEW ENVIRONMENTS
+
+\lstnewenvironment{jdrLstListing}[1][]{\lstset{#1}}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEFINE jdrlstfloat ENVIRONMENT
+
+\floatstyle{ruled}
+\newfloat{jdrlstfloat}{htbp}{lop}
+\floatname{jdrlstfloat}{Listing}
+\def\jdrlstfloatautorefname{Listing} % needed for hyperref/auroref
+%\crefalias{jdrlstfloat}{Listing}% For cleveref support, which I don't currently load, See Lucas Werkmeister comment, https://tex.stackexchange.com/a/279245/7922
+
+\newcommand{\CodeSnipCharacterJdrLst}{\jdrsymbol{✂️}}
+\newcommand{\CodeSnipWidthFactorJdrLst}{0.8}
+\newenvironment{jdrCodeSnip}%
+	{%
+    	\begin{equation}%
+        \begin{minipage}{\CodeSnipWidthFactorJdrLst\linewidth}%
+	}%
+    {%
+    	\end{minipage}
+    	\end{equation}%
+        \ignorespacesafterend
+	}%
+    
+\makeatletter
+\newcounter{CodeSnipCounterJdrLst}
+\AtBeginEnvironment{jdrCodeSnip}{\let\c@equation\c@CodeSnipCounterJdrLst\def\theequation{\CodeSnipCharacterJdrLst\theCodeSnipCounterJdrLst}}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEFINED COLORS
+%   Greeenish defined colors, intended for texcs classes
+\definecolor{colorDarkOliveGreenJdrLst}    {rgb}{0.333,0.420,0.184}%	too brown to be green
+\definecolor{colorForestGreenJdrLst}       {rgb}{0.133,0.545,0.133}%	Good for a darker green
+\definecolor{colorLightSeaGreenJdrLst}     {rgb}{0.125,0.698,0.443}%	Good for a medium–light/dark green
+\definecolor{colorMediumSeaGreenJdrLst}    {rgb}{0.235,0.702,0.113}%	Good for a medium–light/dark green
+\definecolor{colorMediumSpringGreenJdrLst} {rgb}{0.000,0.980,0.604}%	Better than SpringGreen
+\definecolor{colorYellowGreenJdrLst}       {rgb}{0.604,0.804,0.196}%
+\definecolor{colorSpringGreenJdrLst}       {rgb}{0.000,1.000,0.498}%	too fluorescent
+\definecolor{colorLawnGreenJdrLst}         {rgb}{0.486,0.988,0.000}%	too light/fluorescent and therefore hard to read
+
+%   Various non-green colors
+\definecolor{colorOrchidJdrLst}            {rgb}{0.855, 0.439, 0.839}%
+\definecolor{colorMidnightBlueJdrLst}      {rgb}{0.012,0.416,0.580}%
+\definecolor{colorLightPinkJdrLst}   {rgb}{0.99, 0.9, 0.9}%
+\definecolor{colorDarkSlateGrayJdrLst}     {rgb}{0.192, 0.310, 0.310}%
+\definecolor{colorHalfGrayJdrLst}         {rgb}{0.5, 0.5, 0.5}%
+\definecolor{colorDescriptorJdrLst}             {named}{colorMidnightBlueJdrLst}% 
+
+%   Assign particular named color to each style
+\definecolor{colorBasicStyleJdrLst}             {named}{darkgray}%	Color of things not otherwise colored
+\definecolor{colorIdentifierStyleJdrLst}        {named}{colorDarkSlateGrayJdrLst}%	Color of identifiers 
+\definecolor{colorKeywordStyleJdrLst}           {named}{violet}%	Color of keywords
+
+\definecolor{colorTeXCSStyleDefaultJdrLst}      {named}{colorMediumSeaGreenJdrLst}%	Color of TeX control sequences
+\definecolor{colorTeXCSStyleJdrLstA}            {named}{colorForestGreenJdrLst}%	Color of TeX control sequences
+\definecolor{colorTeXCSStyleJdrLstB}            {named}{colorForestGreenJdrLst}%	Color of TeX control sequences
+\definecolor{colorTeXCSStyleJdrLstC}            {named}{magenta}%	Color of TeX control sequences
+
+\definecolor{colorEmphStyleDefaultJdrLst}       {named}{violet}%	Color of emphasized identifiers, class 1.
+\definecolor{colorEmphStyleJdrLstA}             {named}{violet}%	Color of emphasized identifiers, class 1.
+\definecolor{colorEmphStyleJdrLstB}             {named}{orange}%	Color of emphasized identifiers, class 2.
+
+\definecolor{colorCommentStyleJdrLst}           {named}{colorOrchidJdrLst}%	Color of comments 
+\definecolor{colorNumberStyleJdrLst}            {named}{colorHalfGrayJdrLst}%		Color of line numbers
+\definecolor{colorBackgroundJdrLst}             {named}{colorLightPinkJdrLst}%	Background color of the frame
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COMMANDS TO EMULATE/EXTEND SYNTAX HIGHLIGHTING
+\newcommand{\descriptorStylejdrLst}[1]{\textcolor{colorDescriptorJdrLst}{\textrm{\textit{#1}}}}
+
+\newcommand{\typewriterBasicColorJdrLst}        [1]{\texttt{\textcolor{colorBasicStyleJdrLst}{#1}}}
+\newcommand{\typewriterIdentifierColorJdrLst}   [1]{\texttt{\textcolor{colorIdentifierStyleJdrLst}{#1}}}
+\newcommand{\typewriterKeywordColorJdrLst}      [1]{\texttt{\textcolor{colorKeywordStyleJdrLst}{#1}}}
+\newcommand{\typewriterEmphColorJdrLstA}        [1]{\texttt{\textcolor{colorEmphStyleJdrLstA}{#1}}}
+\newcommand{\typewriterEmphColorJdrLstB}        [1]{\texttt{\textcolor{colorEmphStyleJdrLstB}{#1}}}
+\newcommand{\typewriterTeXCSColorJdrLstA}       [1]{\texttt{\textcolor{colorTeXCSStyleJdrLstA}{#1}}}
+\newcommand{\typewriterTeXCSColorJdrLstB}       [1]{\texttt{\textcolor{colorTeXCSStyleJdrLstB}{#1}}}
+\newcommand{\typewriterTeXCSColorJdrLstC}       [1]{\texttt{\textcolor{colorTeXCSStyleJdrLstC}{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEFINE LENGTHS FOR FRAME
+\newlength{\lstLeftMargin}% 					Used as extra margins on left/right. Line numbers & frames moved accordingly
+\newlength{\lstRightMargin}% 					Used as extra margins on left/right. Line numbers & frames moved accordingly
+\newlength{\lstFrameSeparation}% 				Separation between lines of frame and text
+\newlength{\lstFrameLeftMargin}% 				Dimensions used additionally to framesep to make up the margin of the frame
+\newlength{\lstFrameRightMargin}% 				Dimensions used additionally to framesep to make up the margin of the frame
+\newlength{\lstFrameTopMargin}%					Dimensions used additionally to framesep to make up the margin of the frame
+\newlength{\lstFrameBottomMargin}% 				Dimensions used additionally to framesep to make up the margin of the frame
+\newlength{\lstNumberSep}% 						Distance between number and listing
+\lstLeftMargin=0em
+\lstRightMargin=0em
+\lstFrameSeparation=0.5em
+\lstFrameLeftMargin=0.6em
+\lstFrameRightMargin=0.6em
+\lstFrameTopMargin=0.0em
+\lstFrameBottomMargin=0.0em
+\lstNumberSep=10pt
+
+%   Define font sizes
+\newcommand{\lstFontSizeDisplay}{\scriptsize}%	Font size for display-mode listing; inline mode inherits size of surrounding text
+\newcommand{\lstFontSizeLineNumbers}{\tiny}%	Font size for line numbers
+
+%   Defines the class number for each group of identifier
+\newcommand{\nClassEmphAjdrLst}{1}
+\newcommand{\nClassEmphBjdrLst}{2}
+\newcommand{\nClassTeXcsBjdrLst}{2}
+\newcommand{\nClassTeXcsCjdrLst}{3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COMMANDS TO ADD/MOVE IDENTIFIERS TO AN EMPH CLASS
+%   Add list of identifiers to an EMPH class: \addListEmphClassJdrLst
+\newcommand{\addListEmphClassJdrLst}[2]{\expandafter\addListEmphClassJdrLstUnexpanded\expandafter{#1}{#2}\relax}
+%   #1: Comma-separated list of identifiers to add
+%   #2: Class number of emph to which to add identifiers
+    \newcommand{\addListEmphClassJdrLstUnexpanded}[2]{%
+        \lstset{moreemph=[#2]{#1}}%
+    }
+
+%   Delete list of identifiers from an EMPH class: \deleteListEmphClassJdrLst
+\newcommand{\deleteListEmphClassJdrLst}[2]{\expandafter\deleteListEmphClassJdrLstUnexpanded\expandafter{#1}{#2}\relax}
+%   #1: Comma-separated list of identifiers to delete
+%   #2: Class number of emph from which to delete identifiers
+    \newcommand{\deleteListEmphClassJdrLstUnexpanded}[2]{%
+        \lstset{deleteemph=[#2]{#1}}%
+    }
+
+%   Move list of identifiers from one EMPH class to another: \moveListEmphAtoBJdrLst
+\newcommand{\moveListEmphAtoBJdrLst}[3]{\expandafter\moveListEmphAtoBJdrLstUnexpanded\expandafter{#1}{#2}{#3}\relax}
+%   #1: Comma-separated list of identifiers to move
+%   #2: Class number of emph from which to move identifiers
+%   #3: Class number of emph to which to move identifiers
+    \newcommand{\moveListEmphAtoBJdrLstUnexpanded}[3]{%
+        \lstset{deleteemph=[#2]{#1}}%
+        \lstset{moreemph=[#3]{#1}}%
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COMMANDS TO ADD/MOVE IDENTIFIERS TO AN texcs CLASS
+%   Add list of identifiers to an texcs class: \addListTeXCSClassJdrLst
+\newcommand{\addListTeXCSClassJdrLst}[2]{\expandafter\addListTeXCSClassJdrLstUnexpanded\expandafter{#1}{#2}\relax}
+%   #1: Comma-separated list of identifiers to add
+%   #2: Class number of TeXCS to which to add identifiers
+    \newcommand{\addListTeXCSClassJdrLstUnexpanded}[2]{%
+        \lstset{moretexcs=[#2]{#1}}%
+    }
+
+%   Delete list of identifiers from an texcs class: \deleteListTeXCSClassJdrLst
+\newcommand{\deleteListTeXCSClassJdrLst}[2]{\expandafter\deleteListTeXCSClassJdrLstUnexpanded\expandafter{#1}{#2}\relax}
+%   #1: Comma-separated list of identifiers to delete
+%   #2: Class number of TeXCS from which to delete identifiers
+    \newcommand{\deleteListTeXCSClassJdrLstUnexpanded}[2]{%
+        \lstset{deletetexcs=[#2]{#1}}%
+    }
+
+%   Move list of identifiers from one texcs class to another: \moveListTeXCSAtoBJdrLst
+\newcommand{\moveListTeXCSAtoBJdrLst}[3]{\expandafter\moveListTeXCSAtoBJdrLstUnexpanded\expandafter{#1}{#2}{#3}\relax}
+%   #1: Comma-separated list of identifiers to move
+%   #2: Class number of TeXCS from which to move identifiers
+%   #3: Class number of TeXCS to which to move identifiers
+    \newcommand{\moveListTeXCSAtoBJdrLstUnexpanded}[3]{%
+        \lstset{deletetexcs=[#2]{#1}}%
+        \lstset{moretexcs=[#3]{#1}}%
+    }
+%
+%   Commands to emphasize (respectively, unemphasize) a list of identifiers
+%   JdrListing
+\newcommand{\emphasizeIdentifiersJdrListing}{%
+    \moveListEmphAtoBJdrLst{\JdrListingMoreEmphJdrLst}{\nClassEmphAjdrLst}{\nClassEmphBjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrListingMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}{\nClassTeXcsCjdrLst}
+}
+\newcommand{\unemphasizeIdentifiersJdrListing}{%
+    \moveListEmphAtoBJdrLst{\JdrListingMoreEmphJdrLst}{\nClassEmphBjdrLst}{\nClassEmphAjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrListingMoreTeXcsJdrLst}{\nClassTeXcsCjdrLst}{\nClassTeXcsBjdrLst}
+}
+
+%   jdrsgame
+\newcommand{\emphasizeIdentifiersJdrSgame}{%
+    \moveListEmphAtoBJdrLst{\JdrSgameMoreEmphJdrLst}{\nClassEmphAjdrLst}{\nClassEmphBjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrSgameMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}{\nClassTeXcsCjdrLst}
+}
+\newcommand{\unemphasizeIdentifiersJdrSgame}{%
+    \moveListEmphAtoBJdrLst{\JdrSgameMoreEmphJdrLst}{\nClassEmphBjdrLst}{\nClassEmphAjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrSgameMoreTeXcsJdrLst}{\nClassTeXcsCjdrLst}{\nClassTeXcsBjdrLst}
+}
+
+%   jdrunicode
+\newcommand{\emphasizeIdentifiersJdrUnicode}{%
+    \moveListEmphAtoBJdrLst{\JdrUnicodeMoreEmphJdrLst}{\nClassEmphAjdrLst}{\nClassEmphBjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrUnicodeMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}{\nClassTeXcsCjdrLst}
+}
+\newcommand{\unemphasizeIdentifiersJdrUnicode}{%
+    \moveListEmphAtoBJdrLst{\JdrUnicodeMoreEmphJdrLst}{\nClassEmphBjdrLst}{\nClassEmphAjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrUnicodeMoreTeXcsJdrLst}{\nClassTeXcsCjdrLst}{\nClassTeXcsBjdrLst}
+}
+
+%   jdrhcline
+\newcommand{\emphasizeIdentifiersJdrHcline}{%
+    \moveListEmphAtoBJdrLst{\JdrHclineMoreEmphJdrLst}{\nClassEmphAjdrLst}{\nClassEmphBjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrHclineMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}{\nClassTeXcsCjdrLst}
+}
+\newcommand{\unemphasizeIdentifiersJdrHcline}{%
+    \moveListEmphAtoBJdrLst{\JdrHclineMoreEmphJdrLst}{\nClassEmphBjdrLst}{\nClassEmphAjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrHclineMoreTeXcsJdrLst}{\nClassTeXcsCjdrLst}{\nClassTeXcsBjdrLst}
+}
+
+%   jdrarticle
+\newcommand{\emphasizeIdentifiersJdrArticle}{%
+    \moveListEmphAtoBJdrLst{\JdrArticleMoreEmphJdrLst}{\nClassEmphAjdrLst}{\nClassEmphBjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrArticleMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}{\nClassTeXcsCjdrLst}
+}
+\newcommand{\unemphasizeIdentifiersJdrArticle}{%
+    \moveListEmphAtoBJdrLst{\JdrArticleMoreEmphJdrLst}{\nClassEmphBjdrLst}{\nClassEmphAjdrLst}
+    \moveListTeXCSAtoBJdrLst{\JdrArticleMoreTeXcsJdrLst}{\nClassTeXcsCjdrLst}{\nClassTeXcsBjdrLst}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEFINE \initializeLaTeXjdrLst
+%   Call \initializeLaTeXjdrLst in main.tex
+\newcommand{\initializeLaTeXjdrLst}{%
+	\lstset{style=styleBasicStyle}%		1)		Call this lstset 1st
+	\lstset{style=styleOther}%		2)		Call this lstset 2nd
+	\lstset{style=stylePrintEvenIfDraftMode}%
+	\lstset{style=styleLaTeX}%                1)	Call this lstset ONLY for listing LaTeX code
+	\addListEmphClassJdrLst{\moreEmphOmittedStandardLaTeX}{\nClassEmphAjdrLst}%
+	\addListTeXCSClassJdrLst{\moreTeXcsOmittedStandardLaTeX}{\nClassTeXcsBjdrLst}%
+	\addListEmphClassJdrLst{\moreEmphNonJdrThirdParty}{\nClassEmphAjdrLst}%
+	\addListTeXCSClassJdrLst{\moreTeXcsNonJdrThirdPartyLaTeX}{\nClassTeXcsBjdrLst}%
+	\addListEmphClassJdrLst{\JdrListingMoreEmphJdrLst}{\nClassEmphAjdrLst}%
+	\addListTeXCSClassJdrLst{\JdrListingMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}%
+	\addListEmphClassJdrLst{\JdrSgameMoreEmphJdrLst}{\nClassEmphAjdrLst}%
+	\addListTeXCSClassJdrLst{\JdrSgameMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}%
+	\addListEmphClassJdrLst{\JdrUnicodeMoreEmphJdrLst}{\nClassEmphAjdrLst}%
+	\addListTeXCSClassJdrLst{\JdrUnicodeMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}%
+	\addListEmphClassJdrLst{\JdrHclineMoreEmphJdrLst}{\nClassEmphAjdrLst}%
+	\addListTeXCSClassJdrLst{\JdrHclineMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}%
+	\addListEmphClassJdrLst{\JdrArticleMoreEmphJdrLst}{\nClassEmphAjdrLst}%
+	\addListTeXCSClassJdrLst{\JdrArticleMoreTeXcsJdrLst}{\nClassTeXcsBjdrLst}%
+}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Define styles that are independent of choice of language/dialect
+%
+%	Defines the basic style such that
+%		(a)	"display mode" code has size \lstFontSizeDisplay, e.g., \scriptsize
+%		(b)	inline code inherits the font size from surrounding text
+%		See Heiko Oberdiek's answer <https://tex.stackexchange.com/a/161551/7922> to
+%			"Scaling inline code to the current font size," TeX Stack Exchange, February 20, 2014,
+%			https://tex.stackexchange.com/questions/161549/scaling-inline-code-to-the-current-font-size
+%			See also Jim Ratliff's discussion/elaboration: <https://tex.stackexchange.com/a/448588/7922>
+\makeatletter
+	\lstdefinestyle{styleBasicStyle}{%
+		basicstyle=%
+        \color{colorBasicStyleJdrLst}%
+        \ttfamily
+        \lst@ifdisplaystyle\lstFontSizeDisplay\fi% Assigns fontsize for display mode; otherwise inherits from surrounding text.
+	}
+\makeatother
+
+\lstdefinestyle{stylePrintEvenIfDraftMode}{print}
+
+%	Define additional attributes of non–language specific styles
+\lstdefinestyle{styleOther}{%
+	numbers=left,%
+    tabsize=2,%									Tab stops set at columns <tabsize> + 1, 2n+1, 3n+1
+    breaklines=true,%							Activates or deactivates automatic breaking of long lines
+    xleftmargin=\lstLeftMargin,%				Used as extra margins on left/right. Line numbers & frames moved accordingly
+    xrightmargin=\lstRightMargin,%				Used as extra margins on left/right. Line numbers & frames moved accordingly
+    framesep=\lstFrameSeparation,%				Controls space between frame and listing    
+    framexleftmargin=\lstFrameLeftMargin,%		Dimensions used additionally to framesep to make up the margin of the frame
+    framexrightmargin=\lstFrameRightMargin,%	Dimensions used additionally to framesep to make up the margin of the frame
+    framextopmargin=\lstFrameTopMargin,%		Dimensions used additionally to framesep to make up the margin of the frame
+    framexbottommargin=\lstFrameBottomMargin,%	Dimensions used additionally to framesep to make up the margin of the frame
+    numberstyle=\color{colorNumberStyleJdrLst}\lstFontSizeLineNumbers,%
+    numbersep=\lstNumberSep,%
+    identifierstyle=\color{colorIdentifierStyleJdrLst},%
+	keywordstyle=\color{colorKeywordStyleJdrLst},%
+	commentstyle=\color{colorCommentStyleJdrLst},%
+    emphstyle=\color{colorEmphStyleDefaultJdrLst},%
+    backgroundcolor=\color{colorBackgroundJdrLst},% Background color of the frame
+    print%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Define LaTeX-specific styles
+\lstdefinestyle{styleLaTeX}{%
+%	LaTeX-specific style, the first of these
+	language=[%
+	    LaTeX]TeX,%
+	    sensitive=true,%
+        texcsstyle=*\color{colorTeXCSStyleJdrLstA},% The * highlights the \ in front of control sequence name.
+        texcsstyle=*[2]\color{colorTeXCSStyleJdrLstB},%
+        texcsstyle=*[3]\color{colorTeXCSStyleJdrLstC},%
+        emphstyle=\color{colorEmphStyleJdrLstA},%
+        emphstyle=[2]\color{colorEmphStyleJdrLstB},%
+}
+
+%   I don't understand why this is required, but it is. (\RequirePackage was not getting highlighted as a texcs.)
+%   "RequirePackage" is definitely listed in the language definitions under "\lst@definelanguage[AlLaTeX]{TeX}[LaTeX]{TeX}"
+%       but it's not having the required effect.
+\newcommand{\moreTeXcsOmittedStandardLaTeX}{DeclareRobustCommand,PackageError,PackageInfo,PackageWarning,PassOptionsToClass,PassOptionsToPackage,ProvidesPackage,RequirePackage,RequirePackageWithOptions,section,subsection,subsubsection,paragraph,listoffigures,listoftables,tableofcontents,}
+
+%   I don't understand why this is required, but it is.
+\newcommand{\moreEmphOmittedStandardLaTeX}{array,center,displaymath,document,enumerate,eqnarray,equation,flushleft,flushright,itemize,
+list,lrbox,math,minipage,picture,sloppypar,tabbing,tabular,trivlist,verbatim,figure,table,}
+
+
+\newcommand{\moreTeXcsNonJdrThirdPartyLaTeX}{arrayrulecolor,color,definecolor,extrarowheight,lstinline,setlength,textcolor,lstset,lstlistoflistings,lstdefinestyle,Xhline,Xcline,hlineB,clineB,newfloat,floatstyle,floatname,listof,crefalias,lstnewenvironment,text,\lst@ifdisplaystyle,}
+
+\newcommand{\moreEmphNonJdrThirdParty}{article,book,report,chapter,bigstrut,boldline,booktabs,colortbl,float,makecell,listings,lstlisting,language,LaTeX,TeX,style,keywordstyle,basicstyle,identifierstyle,commentstyle,alsolanguage,alsoletter,alsodigit,alsoother,emphstyle,deleteemph,keywords,keywordsprefix,morekeywords,moreemph,moretexcs,texcs,texcsstyle,stringstyle,xcolor,cmyk,CMYK,rgb,RGB,draft,final,dvipsnames,x11names,ruled,hyperref,cleveref,LTXexample,showexpl,mathescape,TextStyle,DisplayStyle,numberstyle,backgroundcolor,}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Identifiers for jdrlisting package
+\newcommand{\JdrListingMoreTeXcsJdrLst}{CodeSnipCharacterJdrLst, typewriterBasicColorJdrLst,descriptorStylejdrLst,emphColorTypewriterjdrLst,typewriterEmphColorJdrLstA, typewriterEmphColorJdrLstB,typewriterIdentifierColorJdrLst,initializeLaTeXjdrLst,typewriterKeywordColorJdrLst, TeXCSColorTypewriterjdrLst,typewriterTeXCSColorJdrLstA,typewriterTeXCSColorJdrLstB,typewriterTeXCSColorJdrLstC, addListEmphClassJdrLst,deleteListEmphClassJdrLst,moveListEmphAtoBJdrLst, addListTeXCSClassJdrLst,deleteListTeXCSClassJdrLst,moveListTeXCSAtoBJdrLst,nClassEmphAjdrLst,nClassEmphBjdrLst,nClassTeXcsBjdrLst,nClassTeXcsCjdrLst,emphasizeIdentifiersJdrListing,emphasizeIdentifiersJdrSgame,emphasizeIdentifiersJdrUnicode,emphasizeIdentifiersJdrHcline,emphasizeIdentifiersJdrArticle,unemphasizeIdentifiersJdrUnicode,emphasizeIdentifiersJdrHcline,emphasizeIdentifiersJdrArticle,unemphasizeIdentifiersJdrListing,unemphasizeIdentifiersJdrSgame,unemphasizeIdentifiersJdrUnicode,unemphasizeIdentifiersJdrHcline,unemphasizeIdentifiersJdrArticle,moreTeXcsOmittedStandardLaTeX,moreEmphOmittedStandardLaTeX,moreTeXcsNonJdrThirdPartyLaTeX,moreEmphNonJdrThirdParty,JdrListingMoreTeXcsJdrLst,JdrListingMoreEmphJdrLst,JdrSgameMoreTeXcsJdrLst,JdrSgameMoreEmphJdrLst,JdrUnicodeMoreTeXcsJdrLst,JdrUnicodeMoreEmphJdrLst,JdrHclineMoreTeXcsJdrLst,JdrHclineMoreEmphJdrLst,JdrArticleMoreTeXcsJdrLst,JdrArticleMoreEmphJdrLst,jdrlstfloatautorefname,lstFontSizeDisplay,lstFontSizeLineNumbers,}
+
+\newcommand{\JdrListingMoreEmphJdrLst}{jdrlisting,jdrLstListing,jdrCodeSnip,jdrlstfloat,jdrLstColorEmphStyle,colorEmphStyleJdrLstA,colorEmphStyleJdrLstB,jdrLstColorTeXCSStyle,colorTeXCSStyleJdrLstA,colorTeXCSStyleJdrLstB,colorTeXCSStyleJdrLstC,codeeq,}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Identifiers for jdrsgame package
+\newcommand{\JdrSgameMoreTeXcsJdrLst}{definejdrsgame,Cplayernm,Rplayernm,printjdrsgame}
+\newcommand{\JdrSgameMoreEmphJdrLst}{jdrsgame,ColumnPayoffs,ColumnStrategies,RowPayoffs,RowStrategies}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Identifiers for jdrunicode package
+\newcommand{\JdrUnicodeMoreTeXcsJdrLst}{jdrsymbol,jdrcircled}
+\newcommand{\JdrUnicodeMoreEmphJdrLst}{jdrunicode}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Identifiers for jdrhcline package
+\newcommand{\JdrHclineMoreTeXcsJdrLst}{jdrHlineT,jdrHlineTC,jdrHlineC,jdrClineT,jdrClineTC,jdrClineC,jdrHlineTStar,jdrHlineTNoStar,jdrHlineTCNoStar,jdrHlineTCStar,jdrHlineCNoStar,jdrHlineCStar,jdrClineTNoStar,jdrClineTStar,jdrClineTCNoStar,jdrClineTCStar,jdrClineCNoStar,jdrClineCStar}
+\newcommand{\JdrHclineMoreEmphJdrLst}{jdrhcline}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Identifiers for jdrarticle package
+\newcommand{\JdrArticleMoreTeXcsJdrLst}{jdrarticleSetElementsTitleHeaderFooter,jdrrunningtitle,jdrRunningHead,jdrVersionDateEtc,jdrAuthorAffiliation,jdrheadfootfont,jdrlistitemsep,jdrlistparskip,jdrlistparsep,jdrlistvspacebefore,jdrsum,jdrcode,lowerbar,overbar,reals,integers,naturals}
+\newcommand{\JdrArticleMoreEmphJdrLst}{jdrarticle,jdr_itemize,jdr_enumerate,tableShade,hyperrefcommandcolor,parentheses,brackets,whitebrackets,curlybrackets,anglebrackets,doubleanglebrackets,tortoiseshellbrackets,blacklenticularbrackets,anglebrackets,}

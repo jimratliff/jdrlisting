@@ -1,0 +1,162 @@
+\ProvidesPackage{jdrstyle}
+\RequirePackage{adjustbox}
+\RequirePackage{mathtools}% For \newtagform, \usetagform
+\RequirePackage{xcolor}
+\RequirePackage{colortbl}% For \rowcolors
+\RequirePackage{caption}
+
+\newlength{\jdrTableFrameThickness}
+\newlength{\jdrTablePaddingUniform}
+\newlength{\jdrTablePaddingLeft}
+\newlength{\jdrTablePaddingBottom}
+\newlength{\jdrTablePaddingRight}
+\newlength{\jdrTablePaddingTop}
+\newlength{\jdrTableFootnoteMargin}
+
+\definecolor{jdrTableFigureCommonBackgroundColor}{rgb}{0.995, 0.95, 0.995}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% jdrtable
+%   Use of \rowcolors (from colortbl package) requires that xcolor be loaded with "table" option
+\colorlet{jdrTableBackgroundColor}{jdrTableFigureCommonBackgroundColor}
+\definecolor{tableShade}{rgb}{0.975, 0.75, 0.975}
+\setlength{\jdrTableFrameThickness}{1pt}
+\setlength{\jdrTablePaddingUniform}{1em}
+\setlength{\jdrTableFootnoteMargin}{0.5em}
+\setlength{\jdrTablePaddingLeft}{\jdrTablePaddingUniform}
+\setlength{\jdrTablePaddingBottom}{\jdrTablePaddingUniform}
+\setlength{\jdrTablePaddingRight}{\jdrTablePaddingUniform}
+\setlength{\jdrTablePaddingTop}{\jdrTablePaddingUniform}
+\newcommand{\jdrTablePaddingVector}%
+    {\jdrTablePaddingLeft \jdrTablePaddingBottom \jdrTablePaddingRight \jdrTablePaddingTop}
+
+\newlength{\jdrFigurePaddingHorizontalEachSide}
+
+\newenvironment{jdrtable}[1][]%
+%   Critical thanks to egreg (Enrico Gregorio) for his answer https://tex.stackexchange.com/a/454276/7922
+%   to my question “'Can't use \vadjust in internal vertical mode' triggered by two-line hanging caption,
+%       using adjustbox, caption packages," TeX Stack Exchange, October 7, 2018
+%       https://tex.stackexchange.com/questions/454267/cant-use-vadjust-in-internal-vertical-mode-triggered-by-two-line-hanging-cap
+    {
+        \renewcommand{\footnotemargin}{\jdrTableFootnoteMargin}% Temporarily resets \footnotemargin so it doesn't hang to the left outside box
+        \begin{table}[#1]
+            \begin{adjustbox}{%
+                padding=\jdrTablePaddingUniform,%
+                bgcolor=jdrTableBackgroundColor,%
+                frame=\jdrTableFrameThickness,%
+                center%
+            }
+                \begin{minipage}{\dimexpr\textwidth-\jdrTablePaddingUniform-\jdrTableFrameThickness}
+                    \centering
+    }{%
+                \end{minipage}
+            \end{adjustbox}
+        \end{table}
+    }%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% jdrfigure
+%   Colors:
+%       Unlike jdrtable, the background for jdrfigure is white; only the caption receives the background color
+\definecolor{jdrFigureBackgroundColor}{named}{white}
+\colorlet{jdrFigureCaptionBackgroundColor}{jdrTableFigureCommonBackgroundColor}
+
+\captionsetup[figure]{box=colorbox,boxcolor=jdrFigureCaptionBackgroundColor,slc=off}
+
+\setlength{\jdrFigurePaddingHorizontalEachSide}{0.5em}
+\newcommand{\jdrFigurePaddingVector}{0.5em 0.5em 0.5em 0.0em}
+
+\definecolor{jdrFigureCaptionBackgroundColor}{rgb}{0.995, 0.95, 0.995}
+\newlength{\jdrFigureFrameThickness}
+\setlength{\jdrFigureFrameThickness}{1pt}
+\newenvironment{jdrfigure}[1][]%
+    {
+        \begin{figure}[#1]
+            \begin{adjustbox}{%
+                padding=\jdrFigurePaddingVector,%
+                bgcolor=jdrFigureBackgroundColor,%
+                frame=\jdrFigureFrameThickness,%
+                center%
+            }
+                \begin{minipage}{\dimexpr\textwidth-\jdrTablePaddingUniform-\jdrTableFrameThickness}
+                    \centering
+    }{%
+                \end{minipage}
+            \end{adjustbox}
+        \end{figure}
+    }%
+
+%	Redefine characters to enclose equation numbers (using mathtools package)
+%		Must be coupled with, e.g., \usetagform{blacklenticularbrackets} here or in source document
+%	See MaxNoe's answer (https://tex.stackexchange.com/a/240364/7922) to "Equation numbering in square brackets [duplicate],"
+%		TeX Stack Exchange, April 24, 2015.
+\newtagform{parentheses}{(}{)} % These are the default enclosures. No need to specify anything.
+\newtagform{brackets}{[}{]}
+\newtagform{whitebrackets}{\jdrunicode{〚}}{\jdrunicode{〛}}
+\newtagform{curlybrackets}{\{}{\}}
+\newtagform{anglebrackets}{\jdrunicode{⟨}}{\jdrunicode{⟩}}
+\newtagform{doubleanglebrackets}{\jdrunicode{⟪}}{\jdrunicode{⟫}}
+\newtagform{tortoiseshellbrackets}{\jdrunicode{〔}}{\jdrunicode{〕}}
+\newtagform{blacklenticularbrackets}{\jdrunicode{【}}{\jdrunicode{】}}
+\newcommand{\jdrarticleDefaultTagForm}{anglebrackets}
+\usetagform{\jdrarticleDefaultTagForm}
+
+%	Define new command \jdrcode to typeset its argument as code, i.e., in typewriter monospaced font and
+%		on a shaded background to enhance its emphasis.
+%	Use package soul, and its highlighting function. Note however that I set soul's highlighting
+%		color to light gray, which overrides the default yellow, which is probably what other
+%		highlighting uses would prefer.
+%		I'm using soul, because it properly hyphenates, whereas \colorbox won't properly wrap lines.
+%	See "How to make a single word look as some code?," TeX Stack Exchange, November 24, 2011.
+%		In particular, see brescia123's answer, https://tex.stackexchange.com/a/232183
+% To format part of a column heading, see Yiannis Lazarides' answer:
+%	https://tex.stackexchange.com/a/197068/
+%	Define a color for \jdrcode, using soul's \hl. Note that this assignment overwrites
+%		soul's default yellow highlighting color, which is unfortunate
+%	Define color "light-gray", for example to provide a contrasting background for code snippets using \jdrcode
+%\definecolor{light-gray}{gray}{0.95}
+%\sethlcolor{light-gray}
+%\newcommand{\jdrcode}[1]{\colorbox{light-gray}{\texttt{#1}}}
+%\newcommand{\jdrcode}[1]{\hl{\texttt{#1}}}
+\newcommand{\jdrcode}[1]{\texttt{#1}}
+
+%%%%%%%%%%%%%%%%%% Custom definitions for math mode (search: mathdefs )
+% 	Redefine \emptyset to be \varnothing
+%		Problem to be address: \emptyset is the logical name for the empty-set character, yet it results in an ugly slashed zero.
+%		Solution: Reprogram \emptyset to result in \varnothing which gives the perfect empty-set character
+\renewcommand{\emptyset}{\varnothing}
+
+%	Define \lowerbar
+%	Problem to be addressed: I want to be able to specify a "lowerbar" beneath characters in math mode,
+%		but "\underbar" turns the argument into text mode before placing the lowerbar beneath.
+%		I want to be able to experiment with different ways to achieve this, so I'm defining my own command,
+%			"\lowerbar" and using the "\newcommand" framework to define it, so that I have the option
+%			to redefine globally easily.
+\newcommand{\lowerbar}{\underline}
+
+%	Define \overbar to improve the width of \overline
+%	See Michael Ummels' answer, <https://tex.stackexchange.com/a/22134>, to "The \bar and \overline commands," TeX Stack Exchange, July 2, 2011,
+%		<https://tex.stackexchange.com/questions/22100/the-bar-and-overline-commands>
+\newcommand{\overbar}[1]{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+
+%	Defining commands for specials sets of numbers
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\naturals}{\mathbb{N}}
+
+%	Other custom commands						(search: customCommands)
+%	\jdrsum allows the addition of two numbers. (See https://tinyurl.com/ya5zsupv )
+\newcommand{\jdrsum} [2] {\the\numexpr #1 + #2}
+
+%	Redefine footnote so that (a) it looks ahead, (b) if there is a footnote following,
+%		it places a comma after the first footnote reference.
+%		See Holle's 7/3/2012 answer https://tex.stackexchange.com/a/62091/7922 
+%		to "Incompatibility between footmisc-option multiple and hyperref,"
+%			Tex Stack Exchange, January 4, 2012,
+%			https://tex.stackexchange.com/questions/40072/incompatibility-between-footmisc-option-multiple-and-hyperref/62091#62091
+
+\let\oldFootnote\footnote
+\newcommand\nextToken\relax
+\renewcommand\footnote[1]{%
+    \oldFootnote{#1}\futurelet\nextToken\isFootnote}
+\newcommand\isFootnote{%
+    \ifx\footnote\nextToken\textsuperscript{,}\fi}
+
